@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+  currency-conversion:
+    image: shefzee/exchange-rate-service:1.0
+    ports:
+      - "9091:8083"
+    restart: always
+    depends_on: # Start the depends_on first
+      - mysql 
+    environment:
+      HOSTNAME: localhost
+      DB_PORT: 3307
+      DB_NAME: exchange_rate
+      DB_USER_NAME: shefzee
+      DB_PASSWORD: shef123
+      SPRING_DATA_URL: jdbc:mysql://mysql:3306/exchange_rate?autoReconnect=true&useSSL=false
+    networks:
+      - currency-conversion-network
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3307:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: dummypassword 
+      MYSQL_USER: shefzee
+      MYSQL_PASSWORD: shef123
+      MYSQL_DATABASE: exchange_rate
+    volumes:
+      - mysql-database-data-volume:/var/lib/mysql
+    networks:
+      - currency-conversion-network  
+  
+# Volumes
+volumes:
+  mysql-database-data-volume:
+
+networks:
+  currency-conversion-network:
